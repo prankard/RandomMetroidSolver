@@ -99,14 +99,7 @@ class SolverState(object):
             self.state["last"] = ""
 
     def toSolver(self, solver):
-        if 'majorsSplit' in self.state:
-            solver.majorsSplit = self.state["majorsSplit"]
-        else:
-            # compatibility with existing sessions
-            if self.state['fullRando'] == True:
-                solver.majorsSplit = 'Full'
-            else:
-                solver.majorsSplit = 'Major'
+        solver.majorsSplit = self.state["majorsSplit"]
         solver.areaRando = self.state["areaRando"]
         solver.bossRando = self.state["bossRando"]
         solver.escapeRando = self.state["escapeRando"]
@@ -1486,6 +1479,8 @@ class StandardSolver(CommonSolver):
 
         self.output.out()
 
+        return self.difficulty
+
     def computeExtStats(self):
         # avgLocs: avg number of available locs, the higher the value the more open is a seed
         # open[1-4]4: how many location you have to visit to open 1/4, 1/2, 3/4, all locations.
@@ -1586,6 +1581,52 @@ class StandardSolver(CommonSolver):
         self.areaGraph.getAvailableLocations(locations, self.smbm, infinity, self.lastAP)
 
         return [loc for loc in locations if loc['difficulty'].bool == True]
+
+class RandoSolver(StandardSolver):
+    def __init__(self, majorsSplit, startAP, areaGraph, locations):
+        self.interactive = False
+        self.checkDuplicateMajor = False
+        self.vcr = None
+        # for compatibility with some common methods of the interactive solver
+        self.mode = 'standard'
+
+        self.log = log.get('Solver')
+
+        # default conf
+        self.setConf(easy, 'any', [], False)
+
+        self.firstLogFile = None
+
+        self.extStatsFilename = None
+        self.extStatsStep = None
+        self.plot = None
+
+        self.type = 'rando'
+        self.output = Out.factory(self.type, self)
+        self.outputFileName = None
+
+        self.locations = locations
+
+        self.smbm = SMBoolManager()
+
+        # preset already loaded by rando
+        self.presetFileName = None
+
+        self.pickup = Pickup(Conf.itemsPickup)
+
+        self.comeBack = ComeBack(self)
+
+        # load ROM info, patches are already loaded by the rando. get the graph from the rando too
+        self.majorsSplit = majorsSplit
+        self.startAP = startAP
+        self.startArea = getAccessPoint(startAP).Start['solveArea']
+        self.areaGraph = areaGraph
+
+        # store at each step how many locations are available
+        self.nbAvailLocs = []
+
+        # reset stuffs
+        Bosses.reset()
 
 class ComeBack(object):
     # object to handle the decision to choose the next area when all locations have the "no comeback" flag.
@@ -1747,6 +1788,8 @@ class Out(object):
             return OutWeb(solver)
         elif output == 'console':
             return OutConsole(solver)
+        elif output == 'rando':
+            return OutRando(solver)
         else:
             raise Exception("Wrong output type for the Solver: {}".format(output))
 
@@ -1954,6 +1997,13 @@ class OutConsole(Out):
             print("Estimated difficulty: {}".format(text))
         else:
             print("Aborted run, can't finish the game with the given prerequisites")
+
+class OutRando(OutConsole):
+    def __init__(self, solver):
+        self.solver = solver
+
+    def out(self):
+        pass
 
 class DifficultyDisplayer:
     def __init__(self, difficulty):

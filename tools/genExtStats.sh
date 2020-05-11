@@ -29,7 +29,11 @@ function computeSeed {
     LOG=${LOG_DIR}/log_$(basename ${RANDO_PRESET} | cut -d '.' -f 1)_$(basename ${SKILL_PRESET} | cut -d '.' -f 1)_${JOB_ID}.log
     SQL=${SQL_DIR}/extStats_${JOB_ID}.sql
 
-    python3.7 ${CWD}/randomizer.py -r "${ROM}" --randoPreset "${RANDO_PRESET}" --param "${SKILL_PRESET}" --ext_stats "${SQL}" --runtime ${RUNTIME_LIMIT} > ${LOG}
+    if(grep "progressionSpeed" ${RANDO_PRESET} | grep -q "rerandom"); then
+        python3.7 ${CWD}/randomrandomizer.py -r "${ROM}" --param "${SKILL_PRESET}" --suitsRestriction --majorsSplit Major --ext_stats "${SQL}" > ${LOG}
+    else
+        python3.7 ${CWD}/randomizer.py -r "${ROM}" --randoPreset "${RANDO_PRESET}" --param "${SKILL_PRESET}" --ext_stats "${SQL}" --runtime ${RUNTIME_LIMIT} > ${LOG}
+    fi
      if [ $? -eq 0 ]; then
 	 SEED=$(grep 'Rom generated:' ${LOG} | awk '{print $NF}')".sfc"
 	 if [ -f "${SEED}" ]; then

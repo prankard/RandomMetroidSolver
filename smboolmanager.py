@@ -50,6 +50,9 @@ class SMBoolManager(object):
         Cache.reset()
 
     def addItem(self, item):
+        if item == 'Boss':
+            return
+
         # a new item is available
         already = self.haveItem(item)
         isCount = self.isCountItem(item)

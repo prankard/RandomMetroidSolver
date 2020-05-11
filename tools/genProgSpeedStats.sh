@@ -29,7 +29,16 @@ function computeSeed {
     LOG=${LOG_DIR}/log_$(basename ${RANDO_PRESET} | cut -d '.' -f 1)_$(basename ${SKILL_PRESET} | cut -d '.' -f 1)_${JOB_ID}.log
     SQL=${SQL_DIR}/extStats_${JOB_ID}.sql
 
-    python3.7 ${CWD}/randomizer.py -r "${ROM}" --randoPreset "${RANDO_PRESET}" --param "${SKILL_PRESET}" --ext_stats "${SQL}" --runtime ${RUNTIME_LIMIT} > ${LOG}
+    if [ ${PROG_SPEED} == 'rerandom' ]; then
+    if [ -n "${FULL}" ]; then
+        MAJORS_SPLIT="Full"
+    else
+        MAJORS_SPLIT="Major"
+    fi
+        python3.7 ${CWD}/randomrandomizer.py -r "${ROM}" --param "${SKILL_PRESET}" --suitsRestriction --majorsSplit ${MAJORS_SPLIT} --ext_stats "${SQL}" > ${LOG}
+    else
+        python3.7 ${CWD}/randomizer.py -r "${ROM}" --randoPreset "${RANDO_PRESET}" --param "${SKILL_PRESET}" --ext_stats "${SQL}" --runtime ${RUNTIME_LIMIT} > ${LOG}
+    fi
      if [ $? -eq 0 ]; then
 	 SEED=$(grep 'Rom generated:' ${LOG} | awk '{print $NF}')".sfc"
 	 if [ -f "${SEED}" ]; then
@@ -73,7 +82,7 @@ NB_CPU=$(cat /proc/cpuinfo  | grep 'processor' | wc -l)
 
 SKILL_PRESET=${CWD}/standard_presets/Season_Races.json
 BASE_RANDO_PRESET=${CWD}/rando_presets/Season_Races.json
-for PROG_SPEED in slowest slow medium fast fastest basic VARIAble; do
+for PROG_SPEED in rerandom slowest slow medium fast fastest basic VARIAble; do
     # generate rando preset
     RANDO_PRESET=${CWD}/rando_presets/Season_Races_${PROG_SPEED}.json
     sed -e "s+VARIAble+${PROG_SPEED}+" ${BASE_RANDO_PRESET} > ${RANDO_PRESET}
