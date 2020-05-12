@@ -45,8 +45,8 @@ echo "${SQL}" | mysql -h ${host} -u ${user} -p${password} ${database}
 #${CWD}/tools/genExtStats.sh ${ROM} 100
 
 # 900 seeds pour les skill/settings presets de tournoi
-${CWD}/tools/genExtStats.sh ${ROM} 500 new_rando
-${CWD}/tools/genExtStats.sh ${ROM} 500 Season_Races
+${CWD}/tools/genExtStats.sh ${ROM} 1000 new_rando
+${CWD}/tools/genExtStats.sh ${ROM} 1000 Season_Races
 #${CWD}/tools/genExtStats.sh ${ROM} 900 Playoff_Races
 #${CWD}/tools/genExtStats.sh ${ROM} 900 SMRAT2020
 
@@ -59,13 +59,13 @@ ${CWD}/tools/genExtStats.sh ${ROM} 500 Season_Races
 #${CWD}/tools/genExtStats.sh ${ROM} 900 stupid_hard master
 #${CWD}/tools/genExtStats.sh ${ROM} 900 way_of_chozo regular
 
-# 1000 seed pour les stats de prog speed
-${CWD}/tools/genProgSpeedStats.sh ${ROM} 500
-${CWD}/tools/genProgSpeedStats.sh ${ROM} 500 FULL
-
-# Stats sur l'échantillon de seeds total
-${CWD}/tools/genTotalStats.sh ~/download/total_seeds_major
-${CWD}/tools/genTotalStats.sh ~/download/total_seeds_full FULL
+## 1000 seed pour les stats de prog speed
+#${CWD}/tools/genProgSpeedStats.sh ${ROM} 500
+#${CWD}/tools/genProgSpeedStats.sh ${ROM} 500 FULL
+#
+## Stats sur l'échantillon de seeds total
+#${CWD}/tools/genTotalStats.sh ~/download/total_seeds_major
+#${CWD}/tools/genTotalStats.sh ~/download/total_seeds_full FULL
 
 #################
 # load stats

@@ -30,7 +30,8 @@ function computeSeed {
     SQL=${SQL_DIR}/extStats_${JOB_ID}.sql
 
     if(grep "progressionSpeed" ${RANDO_PRESET} | grep -q "rerandom"); then
-        python3.7 ${CWD}/randomrandomizer.py -r "${ROM}" --param "${SKILL_PRESET}" --suitsRestriction --majorsSplit Major --ext_stats "${SQL}" > ${LOG}
+        MAJORS_SPLIT=$(grep 'majorsSplit' ${RANDO_PRESET}  | cut -d '"' -f 4)
+        python3.7 ${CWD}/randomrandomizer.py -r "${ROM}" --param "${SKILL_PRESET}" --suitsRestriction --majorsSplit ${MAJORS_SPLIT} --ext_stats "${SQL}" > ${LOG}
     else
         python3.7 ${CWD}/randomizer.py -r "${ROM}" --randoPreset "${RANDO_PRESET}" --param "${SKILL_PRESET}" --ext_stats "${SQL}" --runtime ${RUNTIME_LIMIT} > ${LOG}
     fi
@@ -40,11 +41,10 @@ function computeSeed {
 	     printf "."
 	     rm -f ${LOG}
 
-	     python3.7 ${CWD}/solver.py -r "${SEED}" --preset "${SKILL_PRESET}" --pickupStrategy any --difficultyTarget 0 --ext_stats "${SQL}" --ext_stats_step 1 >/dev/null
+             python3.7 ${CWD}/solver.py -r "${SEED}" --preset "${SKILL_PRESET}" --pickupStrategy any --difficultyTarget 0 --ext_stats "${SQL}" --ext_stats_step 1 >/dev/null
+             python3.7 ${CWD}/solver.py -r "${SEED}" --preset "${SKILL_PRESET}" --pickupStrategy all --difficultyTarget 10 --ext_stats "${SQL}" --ext_stats_step 2 >/dev/null
 
-	     python3.7 ${CWD}/solver.py -r "${SEED}" --preset "${SKILL_PRESET}" --pickupStrategy all --difficultyTarget 10 --ext_stats "${SQL}" --ext_stats_step 2 >/dev/null
-
-	     # delete generated ROM
+             # delete generated ROM
 	     rm -f "${SEED}"
 	 else
 	     printf "x"

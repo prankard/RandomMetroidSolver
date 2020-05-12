@@ -2552,6 +2552,7 @@ def extStats():
     randoPresets.remove("all_random")
     randoPresets.remove("quite_random")
     (stdPresets, tourPresets, comPresets) = loadPresetsList()
+    stdPresets.append("new_rando")
 
     return dict(stdPresets=stdPresets, tourPresets=tourPresets,
                 randoPresets=randoPresets, tourRandoPresets=tourRandoPresets,
